@@ -1,4 +1,4 @@
-import { fromEvent, of, interval, combineLatest, generate, noop } from 'rxjs'
+import { fromEvent, of, interval, combineLatest, generate, noop , type Observable } from 'rxjs'
 import { map, mergeMap, pluck, startWith, scan, toArray, takeWhile, tap } from 'rxjs/operators'
 import { gameSize } from './constants'
 import { Player, Ball, GameObject } from './interfaces'
@@ -6,7 +6,12 @@ import { render } from './html-renderer'
 
 const createGameObject = (x: number, y: number) => ({ x, y })
 
-const player$ = combineLatest(
+interface iPlayer extends GameObject {
+  score: number
+  lives: number
+}
+
+const player$: Observable<iPlayer> = combineLatest(
   of({ ...createGameObject(gameSize - 2, (gameSize / 2) - 1), score: 0, lives: 3 }),
   fromEvent(document, 'keyup').pipe(startWith({ code: '' }), pluck('code'))
 ).pipe(
@@ -20,7 +25,7 @@ const player$ = combineLatest(
   )
 )
 
-const ball$ = combineLatest(
+const ball$: Observable<Ball> = combineLatest(
   of({ ...createGameObject(gameSize / 2, (gameSize - 3)), dirX: 1, dirY: 1 }),
   interval(150)
 ).pipe(
@@ -33,7 +38,7 @@ const ball$ = combineLatest(
   )
 )
 
-const bricks$ = generate(1, x => x < 8, x => x + 1)
+const bricks$:  Observable<GameObject[]> = generate<number>(1, x => x < 8, x => x + 1)
   .pipe(
     mergeMap(r => generate(r % 2 === 0 ? 1 : 0, x => x < gameSize, x => x + 2)
       .pipe(map(c => createGameObject(r, c)))

@@ -6,8 +6,8 @@ const plyer = 1
 const bll = 2
 const brick = 3
 
-const createElem = (col: number) => {
-  const elem = document.createElement('div')
+const createElem = (col: number): HTMLDivElement => {
+  const elem: HTMLDivElement = document.createElement('div')
   elem.classList.add('board')
   elem.style.display = 'inline-block'
   elem.style.marginLeft = '10px'
